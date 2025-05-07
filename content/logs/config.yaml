@@ -1,0 +1,8 @@
+service:
+  image: user-api:v2.0
+  name: user-api
+  ports:
+  - 8080
+  - 9090
+  - 7070
+  replicas: 4
