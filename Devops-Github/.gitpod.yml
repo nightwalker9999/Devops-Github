@@ -1,3 +1,6 @@
+# .gitpod.yml
+# \@prebuild
+
 image:
   file: .gitpod.Dockerfile
 

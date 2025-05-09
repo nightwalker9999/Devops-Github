@@ -3,8 +3,8 @@ FROM gitpod/workspace-full
 USER root
 
 # Install Docker
-RUN apt-get update && apt-get install -y docker.io
+RUN apt-get update && apt-get install -y docker.io unzip curl
 
-# Install Terraform (official script)
-RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg &&     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com bookworm main" | tee /etc/apt/sources.list.d/hashicorp.list &&     apt-get update && apt-get install terraform -y
+# Install Terraform via direct binary
+RUN curl -fsSL https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip -o terraform.zip &&     unzip terraform.zip &&     mv terraform /usr/local/bin/terraform &&     rm terraform.zip
     
