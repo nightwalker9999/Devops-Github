@@ -1,9 +1,10 @@
 image:
-  file: ../.gitpod.Dockerfile
+  file: .gitpod.Dockerfile
 
 tasks:
-  - name: Run app
+  - name: Run Docker Compose
     command: |
+      cd flask-app
       docker-compose up --build
 
 ports:
