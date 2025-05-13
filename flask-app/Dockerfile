@@ -5,10 +5,10 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy application files
-COPY . .
+COPY app/ /app/
 
 # Install dependencies
-RUN pip install --no-cache-dir flask requests
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the Flask port
 EXPOSE 5000
