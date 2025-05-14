@@ -17,3 +17,6 @@ Set up a working, persistent Jenkins server in GitPod using Docker Compose, prep
 - Retrieved Jenkins admin password using:
   ```bash
   docker exec devops_jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
+- Docker Instance backup local
+docker exec -t devops_jenkins tar czf - /var/jenkins_home/jobs | gzip > ../jenkins-config-backup/jobs-backup-$(date +%F).tar.gz
