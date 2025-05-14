@@ -2,11 +2,18 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - name: Run Docker Compose
+  - name: Run Flask + Redis
     command: |
       cd flask-app
       docker-compose up --build
 
+  - name: Start Jenkins
+    command: |
+      cd docker-jenkins-setup
+      docker-compose up -d
+
 ports:
   - port: 5000
     onOpen: open-preview
+  - port: 8080
+    onOpen: open-browser
