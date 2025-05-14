@@ -1,112 +1,19 @@
-# 🚀 Jenkins Setup on DigitalOcean (Docker-Based)
+# 🛠️ Jenkins Setup (Docker Compose in GitPod)
 
-## 📅 Date: [Your Date Here]
-## 💻 System: DigitalOcean Ubuntu 22.04 Droplet
-## 🎯 Objective: Install Docker & Run Jenkins as a Container with Persistent Storage
+## ✅ Objective
 
----
-
-## **1️⃣ Install Docker on DigitalOcean**
-
-### **Update System & Install Docker**
-```sh
-sudo apt update && sudo apt install -y docker.io
-```
-
-### **Verify Installation**
-```sh
-docker --version
-```
-
-### **Allow Running Docker Without `sudo`**
-```sh
-sudo usermod -aG docker $USER
-```
-
-### **Log Out & Log Back In** (Needed for group changes to take effect)
-
-### **Check Docker Status**
-```sh
-docker ps
-```
+Set up a working, persistent Jenkins server in GitPod using Docker Compose, preparing it for future CI/CD pipelines.
 
 ---
 
-## **2️⃣ Create a Custom Docker Network**
-```sh
-docker network create jenkins
-```
+## 🔧 What Was Done
 
----
-
-## **3️⃣ Run Docker-in-Docker (DinD) for Jenkins to Use**
-```sh
-docker run \
-  --name jenkins-docker \
-  --detach \
-  --privileged \
-  --network jenkins \
-  --network-alias docker \
-  --env DOCKER_TLS_CERTDIR= \
-  --publish 2375:2375 \
-  --restart unless-stopped \
-  docker:dind
-```
-
----
-
-## **4️⃣ Run Jenkins as a Persistent Container**
-```sh
-docker run \
-  --name jenkins \
-  --detach \
-  --network jenkins \
-  --env DOCKER_HOST=tcp://docker:2375 \
-  --publish 8080:8080 \
-  --publish 50000:50000 \
-  --restart unless-stopped \
-  jenkins/jenkins:lts
-```
-
----
-
-## **5️⃣ Retrieve Jenkins Admin Password**
-```sh
-docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
-```
-Copy this password and log in to **Jenkins UI**.
-
-### **Access Jenkins UI**
-Open in browser:
-```
-http://your-public-ip:8080
-```
-
----
-
-## **6️⃣ Firewall & Network Fixes (If Needed)**
-
-If Jenkins is not accessible, allow firewall ports:
-```sh
-sudo ufw allow 8080/tcp
-sudo ufw allow 50000/tcp
-sudo ufw reload
-```
-
----
-
-## **7️⃣ Auto-Restart Jenkins After Reboot**
-If Jenkins does not restart automatically, enable persistent restart:
-```sh
-docker update --restart unless-stopped jenkins jenkins-docker
-```
-
----
-
-## **🎯 Final Outcome**
-✅ **Jenkins is now running inside Docker**.  
-✅ **Jenkins and its data persist after reboot**.  
-✅ **Auto-restart is configured for future use**.  
-
-🚀 **Setup complete! Ready for DevOps automation!** 🎯🔥
-
+- Created `docker-compose.yml` to define Jenkins container, port mappings, and volume.
+- Used a **named volume** (`jenkins_home`) to persist Jenkins data like jobs, config, plugins.
+- Exposed **port 8080** in GitPod for Jenkins web UI.
+- Started Jenkins container using `docker-compose up -d`.
+- Diagnosed and resolved **volume permission errors** caused by failed bind mount to `.jenkins_data` (due to GitPod FS restrictions).
+- Switched back to Docker-managed **named volume**, which works seamlessly in GitPod.
+- Retrieved Jenkins admin password using:
+  ```bash
+  docker exec devops_jenkins cat /var/jenkins_home/secrets/initialAdminPassword
