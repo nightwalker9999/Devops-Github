@@ -1,0 +1,78 @@
+# Quick “503 on /login” Fix for Jenkins in Gitpod
+
+Whenever Jenkins gets stuck behind Gitpod’s proxy, follow these steps:
+
+---
+
+## 1. Tear down any old Jenkins container/volume
+
+```bash
+cd path/to/your-repo/jenkins
+docker-compose down --volumes --remove-orphans
+# If a leftover volume still exists, remove it manually:
+docker volume ls                # find the “jenkins_data” volume name or hash
+docker volume rm <that_volume>
+
+
+⸻
+
+2. Ensure docker-compose.yml has these three env vars
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    ports:
+      - "8080:8080"
+    environment:
+      # 1) Skip the Unlock‐Wizard
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      # 2) Bind on 0.0.0.0 and serve at “/”
+      - JENKINS_OPTS=--httpListenAddress=0.0.0.0 --prefix=/
+      # 3) Auto-create an admin:admin user
+      - JENKINS_ADMIN_ID=admin
+      - JENKINS_ADMIN_PASSWORD=admin
+    volumes:
+      - jenkins_data:/var/jenkins_home
+
+volumes:
+  jenkins_data:
+    driver: local
+
+Note: If you want to restore the normal “Unlock Jenkins” flow later, remove the first and third env lines, delete jenkins_data, then restart.
+
+⸻
+
+3. Rebuild and start Jenkins
+
+docker-compose up -d --build
+
+Wait ~15–20 seconds for Jenkins to start (no plugin‐wizard delay).
+
+⸻
+
+4. Expose port 8080 and open preview
+	•	In Gitpod’s bottom toolbar, click Ports → ensure 8080 is “open (public)” (click Expose if not).
+	•	Click the “Open Preview” icon next to port 8080.
+You’ll land on the Jenkins UI immediately.
+
+Login credentials:
+
+username: admin  
+password: admin
+
+
+⸻
+
+If you ever re-enable the wizard
+	1.	Remove these two lines from docker-compose.yml:
+
+- JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+- JENKINS_ADMIN_ID=admin
+- JENKINS_ADMIN_PASSWORD=admin
+
+
+	2.	Delete the jenkins_data volume (see step 1).
+	3.	docker-compose up -d --build → open root URL (/) in Gitpod preview → complete the “Unlock Jenkins” wizard.
+
+Now /login and / will return 200 once you finish setup.
+

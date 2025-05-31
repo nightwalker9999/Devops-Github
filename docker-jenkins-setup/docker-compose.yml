@@ -2,40 +2,22 @@ version: "3.8"
 
 services:
   jenkins:
-    # If you created the Dockerfile above and committed it as “Dockerfile” in the same folder,
-    # you can build from it. Otherwise, just replace “build: .” with “image: jenkins/jenkins:lts-jdk11”.
-    build: .
-    # image: jenkins/jenkins:lts-jdk11
-
-    # Always expose 8080 inside the container
+    image: jenkins/jenkins:lts-jdk11
     ports:
       - "8080:8080"
-      # (We do NOT need the agent port 50000 unless you’re running agents; omit it for simplicity)
-      # - "50000:50000"
-
-    # Crucial: force Jenkins to bind on 0.0.0.0, serve from root, and prevent random context-path.
     environment:
-      # This ensures Jenkins does not attempt to bind to localhost only
-      - JENKINS_OPTS=--prefix=/
-
-      # (Optional: If you want to auto-create an admin/admin user, you can add below,
-      # but be sure to rotate credentials in real life!)
-      #- JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-      #- JENKINS_USER=admin
-      #- JENKINS_PASS=admin
-
-      #(plugin installation environment variables, if you use setup)
-      #- CASC_JENKINS_CONFIG=/usr/share/jenkins/ref/casc.yaml
-
-    # Persist Jenkins home in Gitpod’s workspace—otherwise you lose everything each time
+      # 1) Skip the “Unlock Jenkins” wizard entirely
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      # 2) Force Jenkins to bind on 0.0.0.0 and serve at root “/”
+      - JENKINS_OPTS=--httpListenAddress=0.0.0.0 --prefix=/
+      # 3) Auto-create a default admin user (admin:admin)
+      - JENKINS_ADMIN_ID=admin
+      - JENKINS_ADMIN_PASSWORD=admin
+      # (Optional: if you want to auto-complete security settings, you can add JENKINS_ADMIN_EMAIL)
+      #- JENKINS_ADMIN_EMAIL=you@example.com
     volumes:
       - jenkins_data:/var/jenkins_home
 
-    # Make sure that Jenkins has enough memory on Gitpod
-    # (the default 256m min may be too low for some plugins—optional)
-    #mem_limit: 1g
-
 volumes:
   jenkins_data:
-    # Let Docker store it in Gitpod’s workspace (persisted between rebuilds)
     driver: local
