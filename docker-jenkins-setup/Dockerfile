@@ -1,9 +1,7 @@
-FROM jenkins/jenkins:lts
+# We don’t actually need to rebuild Jenkins—use the official image
+# This Dockerfile is optional; docker-compose can pull the official image directly.
+# But we include it in case you want to bake in plugins, etc. For now, leave it blank.
 
-USER root
+FROM jenkins/jenkins:lts-jdk11
 
-# Install Docker CLI
-RUN apt-get update && apt-get install -y docker.io
-
-# Add jenkins user to docker group
-RUN usermod -aG docker jenkins
+# (No modifications here—everything is done via docker-compose environment vars)
