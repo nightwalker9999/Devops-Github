@@ -1,0 +1,37 @@
+pipeline {
+    agent any 
+
+    environment {
+        IMAGE_NAME = "devopspulse-app"
+        IMAGE_TAG  = "latest"
+    }
+
+    stages {
+        stage('Clone'){
+            steps {
+                git branch: 'docker', url: 'https://github.com/nightwalker9999/Devops-Github.git'
+            }
+        }
+
+        stage('Build Docker Image'){
+            steps {
+                dir('devopspulse-sampleapp'){
+                    sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                }
+            }
+        }
+
+        stage('Test'){
+            steps {
+                echo 'Tests would run here (e.g., health check, curl /)'
+            }
+        }
+
+        stage('Archive Artifact'){
+            steps {
+                writeFile file: 'build-log.txt', text: 'Build completed successfully!'
+                archiveArtifacts artifacts: 'build_log.txt'
+            }
+        }
+    }
+}
