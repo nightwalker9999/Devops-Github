@@ -2,22 +2,17 @@ version: "3.8"
 
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk11
+    build: .
     ports:
       - "8080:8080"
     environment:
-      # 1) Skip the “Unlock Jenkins” wizard entirely
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-      # 2) Force Jenkins to bind on 0.0.0.0 and serve at root “/”
       - JENKINS_OPTS=--httpListenAddress=0.0.0.0 --prefix=/
-      # 3) Auto-create a default admin user (admin:admin)
       - JENKINS_ADMIN_ID=admin
       - JENKINS_ADMIN_PASSWORD=admin
-      # (Optional: if you want to auto-complete security settings, you can add JENKINS_ADMIN_EMAIL)
-      #- JENKINS_ADMIN_EMAIL=you@example.com
     volumes:
-      - jenkins_data:/var/jenkins_home
+      - jenkins_home:/var/jenkins_home
 
 volumes:
-  jenkins_data:
+  jenkins_home:
     driver: local

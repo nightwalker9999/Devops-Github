@@ -1,7 +1,6 @@
-# We don’t actually need to rebuild Jenkins—use the official image
-# This Dockerfile is optional; docker-compose can pull the official image directly.
-# But we include it in case you want to bake in plugins, etc. For now, leave it blank.
-
 FROM jenkins/jenkins:lts-jdk11
 
-# (No modifications here—everything is done via docker-compose environment vars)
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+
+RUN jenkins-plugin-cli --plugins workflow-aggregator git docker-workflow credentials-binding matrix-auth
+
