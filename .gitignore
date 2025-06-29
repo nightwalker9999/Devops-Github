@@ -1,2 +1,4 @@
 *.gsheet
 .env
+# Ignore all of the jenkins_home runtime directory
+/docker-jenkins-setup/jenkins_home/
